@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title><意料之外飲料店></title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #ffe4e1; /* 背景淡粉色 */
+      color: #04baf2;              /* 字體藍色 */
+    }
+    .step { display:none; }
+    .step.active { display:block; }
+    .option {
+      display:inline-block;
+      border:2px solid hsl(207, 93%, 18%);
+      border-radius:8px;
+      padding:10px;
+      margin:10px;
+      cursor:pointer;
+      width:150px;
+    }
+    .option.selected { border-color:#b560b5; } /* 選中外框紫色 */
+    button { margin:10px; padding:8px 12px; }
+    button:disabled { background:hwb(233 32% 20%); color:#f356e3; cursor:not-allowed; }
+    img { margin-top:20px; max-width:300px; }
+  </style>
+</head>
+<body>
+  <h1><<意料之外飲料店>></h1>
+
+  <!-- Step 1: 冰塊 -->
+  <div id="step1" class="step active">
+    <h2>選擇冰塊</h2>
+    <div class="option" onclick="selectSingle('ice','全冰',this)">全冰</div>
+    <div class="option" onclick="selectSingle('ice','少冰',this)">少冰</div>
+    <div class="option" onclick="selectSingle('ice','去冰',this)">去冰</div>
+    <br><button id="btn1" onclick="nextStep(2)" disabled>下一步</button>
+  </div>
+
+  <!-- Step 2: 甜度 -->
+  <div id="step2" class="step">
+    <h2>選擇甜度</h2>
+    <div class="option" onclick="selectSingle('sweet','無糖',this)">無糖</div>
+    <div class="option" onclick="selectSingle('sweet','半糖',this)">半糖</div>
+    <div class="option" onclick="selectSingle('sweet','全糖',this)">全糖</div>
+    <br><button id="btn2" onclick="nextStep(3)" disabled>下一步</button>
+  </div>
+
+  <!-- Step 3: 裝飾 -->
+  <div id="step3" class="step">
+    <h2>選擇裝飾</h2>
+    <div class="option" onclick="selectSingle('decor','貓咪',this)">貓咪</div>
+    <div class="option" onclick="selectSingle('decor','狗狗',this)">狗狗</div>
+    <br><button id="btn3" onclick="nextStep(4)" disabled>下一步</button>
+  </div>
+
+  <!-- Step 4: 配料類別 -->
+  <div id="step4" class="step">
+    <h2>選擇配料</h2>
+    <div class="option" onclick="selectSingle('topping','水果',this)">水果</div>
+    <div class="option" onclick="selectSingle('topping','甜點',this)">甜點</div>
+    <br><button id="btn4" onclick="nextStep(5)" disabled>完成</button>
+  </div>
+
+  <!-- Step 5: 完成 -->
+  <div id="step5" class="step">
+    <h2>久等囉~~</h2>
+    <p id="result"></p>
+    <!-- 合成圖片位置 -->
+    <img id="finalImage" src="" alt="合成飲料">
+  </div>
+
+  <script>
+    const selections = {};
+
+    // 12 張圖片對應表
+    const imageMap = {
+      "全冰-狗狗-水果": "images/drink1.jpeg",
+      "全冰-貓咪-水果": "images/drink2.jpeg",
+      "全冰-狗狗-甜點": "images/drink3.jpeg",
+      "全冰-貓咪-甜點": "images/drink4.jpeg",
+
+      "少冰-狗狗-水果": "images/drink5.jpeg",
+      "去冰-狗狗-水果": "images/drink9.jpeg",
+
+      "少冰-貓咪-水果": "images/drink6.jpeg",
+      "去冰-貓咪-水果": "images/drink10.jpeg",
+
+      "少冰-狗狗-甜點": "images/drink7.jpeg",
+      "去冰-狗狗-甜點": "images/drink11.jpeg",
+
+      "少冰-貓咪-甜點": "images/drink8.jpeg",
+      "去冰-貓咪-甜點": "images/drink12.jpeg"
+    };
+
+    function selectSingle(type,value,el){
+      selections[type]=value;
+      // 清除同層其他選項的選中樣式
+      el.parentNode.querySelectorAll('.option').forEach(opt=>opt.classList.remove('selected'));
+      el.classList.add('selected');
+      // 啟用下一步按鈕
+      const stepId = el.closest('.step').id;
+      const btn = document.getElementById('btn'+stepId.replace('step',''));
+      if(btn) btn.disabled=false;
+    }
+
+    function nextStep(n){
+      document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+      document.getElementById('step'+n).classList.add('active');
+      if(n===5){
+        // 顯示文字結果
+        document.getElementById('result').textContent =
+          `冰塊:${selections.ice}, 甜度:${selections.sweet}, 裝飾:${selections.decor}, 配料:${selections.topping}`;
+
+        // 顯示圖片（甜度不影響圖片）
+        const key = `${selections.ice}-${selections.decor}-${selections.topping}`;
+        const imagePath = imageMap[key] || "images/default.png";
+        document.getElementById('finalImage').src = imagePath;
+      }
+    }
+
+  </script>
+</body>
+</html>
